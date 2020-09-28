@@ -15,7 +15,7 @@ class Stack
 private:
     type* m_Data = nullptr;
     size_t m_Size = 0;
-    size_t m_Capacity;
+    size_t m_Capacity{};
 
     void ReAllocate(const size_t& newCapacity)
     {
@@ -28,34 +28,34 @@ private:
         for (int i = 0; i < size; i++)
         {
             newBlock[i] = std::move(m_Data[i]);
-
         }
         delete[] m_Data;
         m_Data = newBlock;
         m_Capacity = newCapacity;
         std::cout << "re-allocating....\n" ;
-
     }
+
 public:
     Stack()
-    : m_Capacity(2), m_Size(2)
     {
+        ReAllocate(8);
         std::cout << "init size: " << m_Size << "\n";
         std::cout << "init cap: " << m_Capacity << "\n";
+        if (m_Size > m_Capacity)
+            m_Capacity = m_Size;
     }
 
     ~Stack()
     {
         delete[] m_Data;
         std::cout << "Stack destroyed\n";
-
     }
 
 
     void Push(const type& data)
     {
         if ( m_Size >= m_Capacity)
-            ReAllocate(m_Capacity * 2);
+            ReAllocate(m_Capacity * 2 );
         m_Data[m_Size] = std::move(data);
         m_Size++;
     }
@@ -69,8 +69,8 @@ public:
     {
         m_Size = 0;
         std::cout << "Stack cleared\n";
-
     }
+
     type Get()
     {
         return m_Data[m_Size-1];
