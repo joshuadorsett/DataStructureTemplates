@@ -17,7 +17,7 @@ private:
 
     void ReAllocate(const size_t& newCapacity)
     {
-        type* newBlock = new type[newCapacity];
+        type* newBlock = (type*)::operator new( newCapacity * sizeof(type));
         size_t size = m_Size;
         if (newCapacity < size)
         {
@@ -27,7 +27,11 @@ private:
         {
             newBlock[i] = std::move(m_Data[i]);
         }
-        delete[] m_Data;
+        for (int i = 0; i < size; i++)
+        {
+            m_Data[i].~type();
+        }
+        ::operator delete(m_Data, m_Capacity * sizeof(type));
         m_Data = newBlock;
         m_Capacity = newCapacity;
         std::cout << "re-allocating....\n" ;
@@ -42,7 +46,8 @@ public:
 
     ~DynamicArray()
     {
-        delete[] m_Data;
+        Clear();
+        ::operator delete(m_Data, m_Capacity * sizeof(type));
         std::cout << "Dyn Array destroyed\n";
     }
 
@@ -51,12 +56,12 @@ public:
         ReAllocate(size);
     }
 
-    size_t Size() const
+    const size_t& Size() const
     {
         return m_Size;
     }
 
-    size_t Capacity()
+     const size_t& Capacity() const
     {
         return m_Capacity;
     }
@@ -78,21 +83,32 @@ public:
         std::cout << "r value pushed into array.\n" ;
     }
 
-    void EmplaceBack(const type& data)
+    template<typename ...Args>
+    type& EmplaceBack(Args&&...args)
     {
+        if (m_Size > m_Capacity)
+            ReAllocate(m_Capacity * 2);
+        new(m_Data[m_Size]) type(std::forward<Args>(args)...);
+        return m_Data[m_Size++];
 
     }
 
     void PopBack ()
     {
-        m_Size--;
+        if(m_Size > 0)
+        {
+            m_Size--;
+            m_Data[m_Size].~type();
+        }
         std::cout << "last value popped off.\n" ;
-
     }
 
     void Clear ()
     {
-
+        for(int i = 0; i < m_Size; i++)
+            m_Data[i].~type();
+        m_Size = 0;
+        std::cout << "Dyn Array cleared\n";
     }
 
     const type& At(const int& index) const
@@ -108,7 +124,7 @@ public:
 
     type& operator[](const size_t& index)
     {
-            return m_Data[index];
+        return m_Data[index];
     }
 
     const type& operator[](size_t index) const
