@@ -20,12 +20,13 @@ int main() {
         Stack<int> stack;
         stack.Push(1);
         stack.Push(2);
+        stack.Pop();
+
         stack.Clear();
         stack.Push(3);
-        stack.Pop();
         stack.Push(4);
         stack.Push(5);
-        stack.Clear();
+        std::cout << stack.Pop() << "\n";
         stack.Push(4);
         std::cout << "data on top of stack: " << stack.Get() << "\n";
         std::cout << "final size: " << stack.Size() << "\n";

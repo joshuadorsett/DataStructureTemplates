@@ -58,11 +58,13 @@ public:
             ReAllocate(m_Capacity * 2 );
         m_Data[m_Size] = std::move(data);
         m_Size++;
+        std::cout << "value: " << data << " was pushed on the stack\n";
     }
 
-    void Pop()
+    type Pop()
     {
-        m_Size--;
+        std::cout << "value: " << m_Data[--m_Size] << " popped off the stack\n";
+        return m_Data[m_Size];
     }
 
     void Clear()
