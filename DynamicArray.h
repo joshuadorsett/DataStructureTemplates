@@ -132,5 +132,17 @@ public:
         return m_Data[index];
     }
 
+    bool operator==(const DynamicArray<type>& other) const
+    {
+        if (m_Size != other.Size())
+            return false;
+        for (int i = 0; i < m_Size; i++)
+        {
+            if(m_Data[i] != other[i])
+                return false;
+        }
+        return true;
+    }
+
 };
 #endif //SRC_VECTOR_H
